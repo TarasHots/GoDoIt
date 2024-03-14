@@ -10,5 +10,5 @@ build:
 start:
 	${COMPOSE} up -d
 
-bash:
-	${COMPOSE} run app bash
+# bash:
+# 	${COMPOSE} run app 
