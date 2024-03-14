@@ -5,9 +5,9 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.multistage
-    working_dir: /app
     volumes:
-      - .:/app
+      - .:/app:cached
+    working_dir: /app
     container_name: docker-go-do-it
     ports:
       - "8080:8080"
