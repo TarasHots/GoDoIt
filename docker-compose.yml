@@ -3,9 +3,11 @@ version: '3.8'
 services:
   app:
     build:
-      # context: ./
+      context: ./
       dockerfile: Dockerfile.multistage
-    # working_dir: /app
+    working_dir: /app
+    volumes:
+      - .:/app
     container_name: docker-go-do-it
     ports:
       - "8080:8080"

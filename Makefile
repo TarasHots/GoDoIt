@@ -10,5 +10,11 @@ build:
 start:
 	${COMPOSE} up -d
 
+stop:
+	${COMPOSE} down
+
+destroy: stop
+	${COMPOSE} rm --force --stop -v
+
 # bash:
 # 	${COMPOSE} run app 
