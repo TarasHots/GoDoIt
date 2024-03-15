@@ -21,7 +21,7 @@ func (storage *TodoStorage) GetAll() []*models.Todo {
 	storage.mutex.RLock()
 	defer storage.mutex.RUnlock()
 
-	result := make([]*models.Todo, len(storage.items))
+	result := make([]*models.Todo, 0)
 
 	for _, todo := range storage.items {
 		result = append(result, todo)

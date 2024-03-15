@@ -24,7 +24,13 @@ func (handler *TodoHandler) GetAllTodos(c echo.Context) error {
 	return c.JSON(http.StatusOK, todos)
 }
 
-func (handler *TodoHandler) AddTodo(c echo.Context) error {
+func (handler *TodoHandler) GetById(c echo.Context) error {
+	id := c.QueryParam("id")
+
+	return c.JSON(http.StatusOK, json.NewEncoder(c.Response().Writer).Encode(handler.store.GetById(id)))
+}
+
+func (handler *TodoHandler) AddOrUpdateTodo(c echo.Context) error {
 	var newTodo models.Todo
 
 	if err := json.NewDecoder(c.Request().Body).Decode(&newTodo); err != nil {
