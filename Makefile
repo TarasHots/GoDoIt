@@ -7,14 +7,14 @@ build:
 	${COMPOSE} pull --ignore-pull-failures --include-deps
 	${COMPOSE} build
 
-start:
+start: build
 	${COMPOSE} up -d
+
+test:
+	 docker build -f Dockerfile.multistage -t docker-go-do-it --progress plain --no-cache --target run-test-stage .
 
 stop:
 	${COMPOSE} down
 
 destroy: stop
-	${COMPOSE} rm --force --stop -v
-
-# bash:
-# 	${COMPOSE} run app 
+	${COMPOSE} rm --force --stop -v 
