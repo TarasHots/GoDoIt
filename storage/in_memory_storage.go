@@ -11,13 +11,13 @@ type TodoStorage struct {
 	items map[string]*models.Todo
 }
 
-func NewTodoStorage() *TodoStorage {
+func New() *TodoStorage {
 	return &TodoStorage{
 		items: make(map[string]*models.Todo),
 	}
 }
 
-func (storage *TodoStorage) getAll() []*models.Todo {
+func (storage *TodoStorage) GetAll() []*models.Todo {
 	storage.mutex.RLock()
 	defer storage.mutex.RUnlock()
 
@@ -30,21 +30,21 @@ func (storage *TodoStorage) getAll() []*models.Todo {
 	return result
 }
 
-func (storage *TodoStorage) getById(id string) *models.Todo {
+func (storage *TodoStorage) GetById(id string) *models.Todo {
 	storage.mutex.RLock()
 	defer storage.mutex.RUnlock()
 
 	return storage.items[id]
 }
 
-func (storage *TodoStorage) add(newTodo *models.Todo) {
+func (storage *TodoStorage) Add(newTodo *models.Todo) {
 	storage.mutex.Lock()
 	defer storage.mutex.Unlock()
 
 	storage.items[newTodo.ID] = newTodo
 }
 
-func (storage *TodoStorage) delete(id string) {
+func (storage *TodoStorage) Delete(id string) {
 	storage.mutex.Lock()
 	defer storage.mutex.Unlock()
 

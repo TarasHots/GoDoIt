@@ -9,11 +9,11 @@ import (
 
 func main() {
 	e := echo.New()
-	storage := storage.NewTodoStorage()
-	requestsHandler := handler.NewTodoHandler(storage)
+	storage := storage.New()
+	requestsHandler := handler.New(storage)
 
-	e.GET("/todo", requestsHandler.getAllTodos)
-	e.GET("/todo/add", requestsHandler.addTodo)
+	e.GET("/todo", requestsHandler.GetAllTodos)
+	e.POST("/todo/add", requestsHandler.AddTodo)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
