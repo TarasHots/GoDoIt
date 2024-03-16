@@ -25,9 +25,7 @@ func (handler *TodoHandler) GetAllTodos(c echo.Context) error {
 }
 
 func (handler *TodoHandler) GetById(c echo.Context) error {
-	id := c.QueryParam("id")
-
-	return c.JSON(http.StatusOK, json.NewEncoder(c.Response().Writer).Encode(handler.store.GetById(id)))
+	return c.JSON(http.StatusOK, handler.store.GetById(c.Param("id")))
 }
 
 func (handler *TodoHandler) AddOrUpdateTodo(c echo.Context) error {
