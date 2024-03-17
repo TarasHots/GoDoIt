@@ -131,3 +131,29 @@ func TestTodoItemCanBeUpdated(t *testing.T) {
 		assert.Equal(t, updatedData, strings.TrimSuffix(recorder.Body.String(), "\n"))
 	}
 }
+
+func TestItemCanBeDeleted(t *testing.T) {
+	e := echo.New()
+	request := httptest.NewRequest(http.MethodDelete, "/", nil)
+
+	recorder := httptest.NewRecorder()
+	context := e.NewContext(request, recorder)
+	context.SetPath("/todo/:id")
+	context.SetParamNames("id")
+	context.SetParamValues("1")
+
+	var exampleTodoItem models.Todo
+	exampleTodoItem.ID = "1"
+	exampleTodoItem.Title = "test"
+	exampleTodoItem.Description = "test desc"
+	exampleTodoItem.DueDate = time.Now()
+
+	storage := storage.New()
+	storage.Add(&exampleTodoItem)
+	handler := handler.New(storage)
+
+	if assert.NoError(t, handler.Remove(context)) {
+		assert.Equal(t, http.StatusNoContent, recorder.Code)
+		assert.Equal(t, "null", strings.TrimSuffix(recorder.Body.String(), "\n"))
+	}
+}
