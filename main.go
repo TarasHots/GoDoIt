@@ -15,12 +15,13 @@ func main() {
 	requestsHandler := handler.New(storage)
 
 	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, struct{}{})
+		return c.JSON(http.StatusOK, nil)
 	})
 
 	e.GET("/todo", requestsHandler.GetAllTodos)
 	e.GET("/todo/:id", requestsHandler.GetById)
 	e.POST("/todo/add", requestsHandler.AddOrUpdateTodo)
+	e.DELETE("/todo/:id", requestsHandler.Remove)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

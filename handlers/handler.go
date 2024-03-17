@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"th/GoDoIt/models"
@@ -25,16 +24,30 @@ func (handler *TodoHandler) GetAllTodos(c echo.Context) error {
 }
 
 func (handler *TodoHandler) GetById(c echo.Context) error {
-	return c.JSON(http.StatusOK, handler.store.GetById(c.Param("id")))
+	if todo := handler.store.GetById(c.Param("id")); todo != nil {
+		return c.JSON(http.StatusOK, todo)
+	}
+
+	return c.JSON(http.StatusNotFound, nil)
 }
 
 func (handler *TodoHandler) AddOrUpdateTodo(c echo.Context) error {
-	var newTodo models.Todo
+	newTodo := new(models.Todo)
 
-	if err := json.NewDecoder(c.Request().Body).Decode(&newTodo); err != nil {
-		return c.JSON(http.StatusBadRequest, newTodo)
+	if err := c.Bind(newTodo); err != nil {
+		return err
 	}
 
-	handler.store.Add(&newTodo)
+	handler.store.Add(newTodo)
 	return c.JSON(http.StatusCreated, newTodo)
+}
+
+func (handler *TodoHandler) Remove(c echo.Context) error {
+	if todo := handler.store.GetById(c.Param("id")); todo != nil {
+		handler.store.Delete(todo.ID)
+
+		return c.JSON(http.StatusNoContent, nil)
+	}
+
+	return c.JSON(http.StatusNotFound, nil)
 }
