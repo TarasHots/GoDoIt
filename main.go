@@ -7,10 +7,14 @@ import (
 	"th/GoDoIt/storage"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	e := echo.New()
+
+	e.Use(middleware.Recover())
+
 	storage := storage.New()
 	requestsHandler := handler.New(storage)
 
