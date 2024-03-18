@@ -5,6 +5,7 @@ import (
 
 	handler "th/GoDoIt/handlers"
 	"th/GoDoIt/storage"
+	validator "th/GoDoIt/validators"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -12,6 +13,8 @@ import (
 
 func main() {
 	e := echo.New()
+
+	e.Validator = validator.New()
 
 	e.Use(middleware.Recover())
 

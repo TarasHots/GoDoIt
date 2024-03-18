@@ -35,7 +35,11 @@ func (handler *TodoHandler) AddOrUpdateTodo(c echo.Context) error {
 	newTodo := new(models.Todo)
 
 	if err := c.Bind(newTodo); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	if err := c.Validate(newTodo); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
 	handler.store.Add(newTodo)

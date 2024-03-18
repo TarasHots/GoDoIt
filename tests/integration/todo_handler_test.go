@@ -11,6 +11,7 @@ import (
 	handler "th/GoDoIt/handlers"
 	"th/GoDoIt/models"
 	"th/GoDoIt/storage"
+	validator "th/GoDoIt/validators"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -83,6 +84,8 @@ func TestAddTodoItem(t *testing.T) {
 	exampleJson := `{"id":"111","title":"test","description":"example description","due_date":"0001-01-01T00:00:00Z"}`
 
 	e := echo.New()
+	e.Validator = validator.New()
+
 	request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(exampleJson))
 	request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
@@ -105,6 +108,8 @@ func TestTodoItemCanBeUpdated(t *testing.T) {
 	updatedData := `{"id":"222","title":"test","description":"example description","due_date":"0001-01-01T00:00:00Z"}`
 
 	e := echo.New()
+	e.Validator = validator.New()
+
 	request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(updatedData))
 	request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
@@ -155,5 +160,30 @@ func TestItemCanBeDeleted(t *testing.T) {
 	if assert.NoError(t, handler.Remove(context)) {
 		assert.Equal(t, http.StatusNoContent, recorder.Code)
 		assert.Equal(t, "null", strings.TrimSuffix(recorder.Body.String(), "\n"))
+	}
+}
+
+func TestValidation(t *testing.T) {
+	exampleJsonWithInvalidData := `{"id":"invalid id here","title":"test","description":"example description","due_date":"0001-01-01T00:00:00Z"}`
+	expectedError := `{"message":"Key: 'Todo.ID' Error:Field validation for 'ID' failed on the 'number' tag"}`
+
+	e := echo.New()
+	e.Validator = validator.New()
+
+	request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(exampleJsonWithInvalidData))
+	request.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+	recorder := httptest.NewRecorder()
+	context := e.NewContext(request, recorder)
+	context.SetPath("/todo")
+
+	storage := storage.New()
+	handler := handler.New(storage)
+
+	assert.Empty(t, storage.GetAll())
+
+	if assert.NoError(t, handler.AddOrUpdateTodo(context)) {
+		assert.Equal(t, http.StatusBadRequest, recorder.Code)
+		assert.Equal(t, expectedError, strings.TrimSuffix(recorder.Body.String(), "\n"))
 	}
 }
